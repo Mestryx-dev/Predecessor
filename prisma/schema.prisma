@@ -1,0 +1,36 @@
+/// Prisma schema for Predecéssor DPS calculator
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Hero {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  role        String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  matches     Match[]  @relation("HeroMatches")
+}
+
+model Match {
+  id          Int      @id @default(autoincrement())
+  heroId      Int
+  hero        Hero     @relation("HeroMatches", fields: [heroId], references: [id])
+  date        DateTime
+  duration    Int      // in seconds
+  kills       Int
+  deaths      Int
+  assists     Int
+  damageDealt Int
+  damageTaken Int
+  healingDone Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
