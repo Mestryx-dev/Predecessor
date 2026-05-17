@@ -12,7 +12,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 FROM node:20-alpine AS runner
-RUN apk add --no-cache libc6-compat openssl curl su-exec
+RUN apk add --no-cache libc6-compat openssl curl su-exec sqlite
 WORKDIR /app
 
 ENV NODE_ENV=production

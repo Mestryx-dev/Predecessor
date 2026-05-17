@@ -1,8 +1,27 @@
 export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
+import { assertDbReady, isMissingTableError } from '@/lib/ensure-db'
 
 export default async function HomePage() {
+  try {
+    await assertDbReady()
+  } catch (error) {
+    if (isMissingTableError(error)) {
+      return (
+        <main>
+          <h1>Predecessor DPS Calculator</h1>
+          <p className="empty">
+            La base SQLite n&apos;est pas initialisée (table Hero absente).
+            Redéploie la dernière image ou redémarre le conteneur pour relancer{' '}
+            <code>prisma migrate deploy</code> au démarrage.
+          </p>
+        </main>
+      )
+    }
+    throw error
+  }
+
   const [heroes, totalHeroes, totalMatches] = await Promise.all([
     prisma.hero.findMany({
       select: { id: true, name: true, slug: true, role: true },
