@@ -43,3 +43,11 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Make GHCR package public (Dokploy pull without registry login)
+        run: |
+          gh api --method POST \
+            "/orgs/Mestryx-dev/packages/container/predecessor/visibility" \
+            -f visibility=public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
