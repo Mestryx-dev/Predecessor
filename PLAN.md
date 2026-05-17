@@ -94,6 +94,18 @@ Construire une application auto‑hébergée (Dokploy) permettant de :
 - Le wrapper `update-all.sh` garantit que chaque étape s’exécute dans l’ordre et que seules les modifications réelles déclenchent un commit/push, réduisant les builds inutiles sur Dokploy.  
 - Documenter les décisions dans la mémoire persistante (`memory` tool) évite de devoir redemander les mêmes informations à chaque nouvelle session.
 
+## Déploiement Dokploy (référence prod)
+
+| Élément | Valeur |
+|---------|--------|
+| Image | `ghcr.io/mestryx-dev/predecessor:latest` (CI GitHub Actions) |
+| Port conteneur | **3010** (`ENV PORT` + `EXPOSE` dans le Dockerfile) |
+| Volume obligatoire | **`/data`** → SQLite `file:/data/prod.db` |
+| Variables | `PORT=3010`, `DATABASE_URL=file:/data/prod.db`, `NODE_ENV=production`, `HOSTNAME=0.0.0.0` |
+| Permissions | Entrypoint `chown nextjs:nodejs /data` à chaque démarrage (volume Docker souvent root) |
+
+Ne pas committer `.env` prod. Utiliser Dokploy Environment + `application.reload` après changement.
+
 ---
 
 **Prochaine action immédiate (à faire maintenant)**  
