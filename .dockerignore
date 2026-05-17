@@ -1,9 +1,12 @@
 node_modules
 .next
-.out
 .git
 .gitignore
-Dockerfile
-docker-compose.yml
-.env
 *.md
+.env
+.env.*
+data/raw
+prisma/*.db
+prisma/**/*.db
+coverage
+.husky

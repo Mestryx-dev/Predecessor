@@ -2,3 +2,5 @@ node_modules/
 .next/
 data/raw/
 *.env
+prisma/**/*.db
+*.db

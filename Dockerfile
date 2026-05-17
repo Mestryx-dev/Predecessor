@@ -1,39 +1,48 @@
-# ---- Base image ------------------------------------------------------------
+# syntax=docker/dockerfile:1.7
+
 FROM node:20-alpine AS builder
-
-# Install pnpm (ou npm si tu préfères) – plus rapide et déterministe
-# Si tu utilises npm, remplace les lignes pnpm par npm ci && npm run build
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-# ---- Dépendances -----------------------------------------------------------
-# Copie seulement les fichiers de lock pour profiter du cache de Docker
 COPY package.json package-lock.json ./
-RUN npm ci   # (ou: RUN corepack enable && pnpm install --frozen-lockfile)
+COPY prisma ./prisma
+RUN npm ci
+RUN npx prisma generate
 
-# Copie le reste du code
 COPY . .
-
-# ---- Build Next.js ---------------------------------------------------------
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build   # génère .next/
+RUN npm run build
 
-# ---- Production image ------------------------------------------------------
 FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat openssl curl
 WORKDIR /app
 
-# Seulement ce qui est nécessaire en prod
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 
-# Copie le build depuis l’étape builder
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+RUN addgroup -g 1001 -S nodejs \
+  && adduser -S nextjs -u 1001 -G nodejs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder /app/package.json ./package.json
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+  && chown -R nextjs:nodejs /app
 
-# Expose le port que Next.js écoute par défaut
+USER nextjs
 EXPOSE 3000
 
-# Lancement
-CMD ["npm", "start"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${PORT}/api/heroes" >/dev/null || exit 1
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["node", "server.js"]
