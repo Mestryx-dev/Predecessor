@@ -45,9 +45,17 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Make GHCR package public (Dokploy pull without registry login)
+        continue-on-error: true
         run: |
-          gh api --method POST \
+          for endpoint in \
             "/orgs/Mestryx-dev/packages/container/predecessor/visibility" \
-            -f visibility=public
+            "/user/packages/container/predecessor/visibility"; do
+            if gh api --method POST "$endpoint" -f visibility=public; then
+              echo "Package set public via $endpoint"
+              exit 0
+            fi
+          done
+          echo "::warning::Could not set GHCR visibility via API — set public manually in GitHub Packages UI"
+          exit 0
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
