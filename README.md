@@ -32,7 +32,7 @@ The image listens on **3010** (same as Dokploy). Entrypoint runs as root briefly
 
 | Setting | Value |
 |---------|--------|
-| Provider | **Docker** — `ghcr.io/mestryx-dev/predecessor:latest` (do not build Dockerfile on host if Docker Hub DNS is broken) |
+| Provider | **Docker** — `ghcr.io/mestryx-dev/predecessor:<git-sha>` (prefer commit tag over `latest`; Swarm caches `latest`) |
 | Container port | **3010** (`publishedPort` and `targetPort` = 3010) |
 | Volume (required) | Mount **`/data`** (e.g. `predecessor-data`) |
 | Environment | See below |
