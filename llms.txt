@@ -1,0 +1,29 @@
+# predecéssor-dps
+
+> Self-hosted Next.js app for Predecessor hero stats / DPS, fed from Pred.gg data. Deployed via Dokploy (image `ghcr.io/mestryx-dev/predecessor`, port 3010). Chat French, durable files English. There is no `docs/` tree by design.
+
+## Root
+
+- [README.md](README.md): Repository overview — setup, env, deployment
+- [PLAN.md](PLAN.md): Development plan — roadmap and feature notes
+- [AGENTS.md](AGENTS.md): Agent guide — change protocol, stack, WorkSpace context
+
+## App
+
+- [app/page.tsx](app/page.tsx): Main page — hero stats / DPS UI
+- [app/layout.tsx](app/layout.tsx): Root layout
+- [lib/prisma.ts](lib/prisma.ts): Prisma client singleton
+- [lib/ensure-db.ts](lib/ensure-db.ts): Database bootstrap / ensure logic
+
+## Data & scripts
+
+- [prisma/schema.prisma](prisma/schema.prisma): Prisma schema — heroes, stats, matches
+- [prisma/migrations/](prisma/migrations/): Database migrations
+- [scripts/fetchMatches.ts](scripts/fetchMatches.ts): Pred.gg data fetch script
+- [scripts/processMatches.ts](scripts/processMatches.ts): Match processing script
+
+## Optional
+
+- [Dockerfile](Dockerfile): Container build for Dokploy deployment
+- [docker-entrypoint.sh](docker-entrypoint.sh): Container entrypoint
+- [.env.example](.env.example): Environment variables template
