@@ -59,7 +59,7 @@ Construire une application auto‑hébergée (Dokploy) permettant de :
 
 | # | Action | Commande / Fichier | Vérification |
 |---|--------|--------------------|--------------|
-| **1** | **Initialiser le dépôt Git** | `cd /home/mestryx/Workspace-OpenClaw/repositories`<br>`mkdir -p predecéssor-dps && cd $_`<br>`git init`<br>`git config user.name "Mestryx"`<br>`git config user.email "mestryx@example.com"` | Dépot vierge visible avec `git status`. |
+| **1** | **Initialiser le dépôt Git** | `cd /home/mestryx/WorkSpace/repositories`<br>`mkdir -p predecéssor-dps && cd $_`<br>`git init` | Dépot vierge visible avec `git status`. |
 | **2** | **Créer la structure de base** | `mkdir -p app/api app/[hero] data/static data/processed scripts dokploy docs`<br>`touch .gitignore README.md package.json tsconfig.json next.config.js` | Arborescence créée (`ls -R`). |
 | **3** | **Configurer `.gitignore`** | ```bash\ncat > .gitignore <<'EOF'\nnode_modules/\n.next/\ndata/raw/\n*.env\nEOF\n``` | `git check-ignore -v data/raw/test` retourne une ligne. |
 | **4** | **Initialiser le projet Next.js (TypeScript)** | `npm init -y`<br>`npm i next react react-dom`<br>`npm i -D typescript @types/react @types/node`<br>`npx tsc --init` (ajuster `outDir`, `rootDir`)<br>`npm run dev` → doit démarrer sur `http://localhost:3000` | `npm run dev` démarre sans erreur ; page accessible. |
